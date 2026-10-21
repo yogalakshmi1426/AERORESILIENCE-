@@ -1,0 +1,37 @@
+-- =====================================================
+-- AERORESILIENCE - 12_bronze_reset.sql
+-- Empties every BRONZE table so the corrected source files can be loaded again.
+--
+-- WHY THIS IS NEEDED: the generators re-uploaded files with the SAME names but NEW content.
+-- COPY's load metadata would treat changed files as new and load them AGAIN -> duplicates.
+-- TRUNCATE removes the rows AND the table's load metadata, so the next COPY starts clean.
+-- (DELETE FROM would remove rows but keep the load metadata - files would be skipped!)
+--
+-- After running this: Run All 10_bronze_load.sql, then PHASE 3 of 11_incident_b_supplier_schema.sql.
+-- =====================================================
+
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE AERO_WH;
+USE SCHEMA AERORESILIENCE.BRONZE;
+
+TRUNCATE TABLE IF EXISTS REF_AIRPORTS_RAW;
+TRUNCATE TABLE IF EXISTS REF_AIRLINES_RAW;
+TRUNCATE TABLE IF EXISTS REF_AIRCRAFT_RAW;
+TRUNCATE TABLE IF EXISTS REF_ROUTES_RAW;
+TRUNCATE TABLE IF EXISTS REF_MIN_CONNECTION_TIMES_RAW;
+TRUNCATE TABLE IF EXISTS REF_SUPPLIERS_RAW;
+TRUNCATE TABLE IF EXISTS REF_PARTS_RAW;
+TRUNCATE TABLE IF EXISTS SCHED_FLIGHTS_RAW;
+TRUNCATE TABLE IF EXISTS FOS_MESSAGES_RAW;
+TRUNCATE TABLE IF EXISTS BAG_SCANS_RAW;
+TRUNCATE TABLE IF EXISTS MRO_DEFECTS_RAW;
+TRUNCATE TABLE IF EXISTS INVENTORY_SNAPSHOTS_RAW;
+TRUNCATE TABLE IF EXISTS RES_BOOKINGS_RAW;
+TRUNCATE TABLE IF EXISTS RES_SEGMENTS_RAW;
+TRUNCATE TABLE IF EXISTS DCS_BOARDED_RAW;
+TRUNCATE TABLE IF EXISTS WEATHER_ALERTS_RAW;
+TRUNCATE TABLE IF EXISTS CTRL_DELIVERY_LOG_RAW;
+TRUNCATE TABLE IF EXISTS SUPPLIER_SHIPMENTS_RAW;
+TRUNCATE TABLE IF EXISTS SUPPLIER_POS_RAW;
+
+ALTER STAGE RAW_STAGE REFRESH;     -- re-index the stage after the new uploads
